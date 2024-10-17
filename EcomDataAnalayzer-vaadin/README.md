@@ -16,7 +16,7 @@ This project is a **Vaadin-based** Java web application designed for managing an
   - Add new sales data records.
   - Update existing sales data records.
   - Delete sales data records with confirmation.
-  - Filter sales data based on different criteria (Order ID, Status, Ship City, Channel).
+  - Filter sales data based on different criteria ( Status and Channel).
 
 ## Technologies Used
 
