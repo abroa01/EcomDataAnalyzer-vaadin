@@ -146,15 +146,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For any questions or issues, feel free to contact me at [abroa01@pfw.edu@example.com].
 
 ```
-
-### Explanation of the `README.md` Sections:
-- **Features**: Lists the capabilities of the application.
-- **Technologies Used**: Specifies the tech stack used for development.
-- **Installation**: Provides step-by-step instructions for setting up the project locally.
-- **Usage**: Explains how to navigate and use different parts of the application.
-- **Project Structure**: Outlines the directory structure and what each folder contains.
-- **Configuration**: Describes how to configure the application for development and production.
-- **Testing**: Explains how to run tests.
-- **Contributing**: Details how others can contribute to the project.
-- **License**: States the license under which the project is released.
-- **Contact**: Provides a way for users to reach out with questions.
