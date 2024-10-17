@@ -1,0 +1,186 @@
+/**
+ * This controller handles all REST API requests for accessing and filtering sales data.
+ * It exposes various endpoints to retrieve data based on different filters such as category,
+ * date, status, fulfilment, and sales channel.
+ */
+package com.acs560.dataanalyzer.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.acs560.dataanalyzer.models.EcomSalesData;
+import com.acs560.dataanalyzer.services.EcomSalesDataService;
+
+import java.util.Date;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/sales")
+@RequiredArgsConstructor
+public class DataController {
+
+    private final EcomSalesDataService service;
+
+    /**
+     * Retrieves all sales data.
+     * 
+     * @return - A list of all sales data available.
+     */
+    @GetMapping
+    public ResponseEntity<List<EcomSalesData>> getAllSalesData() {
+        return ResponseEntity.ok(service.getAllSalesData());
+    }
+
+    /**
+     * Retrieves sales data for a specific index.
+     * 
+     * @param index - The index of the sales data.
+     * @return - The sales data for the specified index or 404 if not found.
+     */
+    @GetMapping("/{index}")
+    public ResponseEntity<EcomSalesData> getSalesDataByIndex(@PathVariable int index) {
+        EcomSalesData data = service.getSalesDataByIndex(index);
+        if (data != null) {
+            return ResponseEntity.ok(data);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Retrieves sales data filtered by category.
+     * 
+     * @param category - The category to filter sales data by.
+     * @return - A list of sales data that matches the specified category.
+     */
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<EcomSalesData>> getSalesDataByCategory(@PathVariable String category) {
+        return ResponseEntity.ok(service.getSalesDataByCategory(category));
+    }
+
+    /**
+     * Retrieves sales data filtered by date.
+     * 
+     * @param date - The date to filter sales data by.
+     * @return - A list of sales data that matches the specified date.
+     */
+    @GetMapping("/date")
+    public ResponseEntity<List<EcomSalesData>> getSalesDataByDate(@RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date date) {
+        return ResponseEntity.ok(service.getSalesDataByDate(date));
+    }
+
+    /**
+     * Retrieves sales data filtered by status (e.g., Shipped, Cancelled).
+     * 
+     * @param status - The order status to filter sales data by.
+     * @return - A list of sales data that matches the specified status.
+     */
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<EcomSalesData>> getSalesDataByStatus(@PathVariable String status) {
+        return ResponseEntity.ok(service.getSalesDataByStatus(status));
+    }
+
+    /**
+     * Retrieves sales data filtered by fulfilment type (e.g., Merchant, Amazon).
+     * 
+     * @param fulfilment - The fulfilment type to filter sales data by.
+     * @return - A list of sales data that matches the specified fulfilment type.
+     */
+    @GetMapping("/fulfilment/{fulfilment}")
+    public ResponseEntity<List<EcomSalesData>> getSalesDataByFulfilment(@PathVariable String fulfilment) {
+        return ResponseEntity.ok(service.getSalesDataByFulfilment(fulfilment));
+    }
+
+    /**
+     * Retrieves sales data filtered by sales channel (e.g., Amazon.in).
+     * 
+     * @param channel - The sales channel to filter sales data by.
+     * @return - A list of sales data that matches the specified sales channel.
+     */
+    @GetMapping("/channel/{channel}")
+    public ResponseEntity<List<EcomSalesData>> getSalesDataByChannel(@PathVariable String channel) {
+        return ResponseEntity.ok(service.getSalesDataByChannel(channel));
+    }
+
+    /**
+     * Retrieves sales data filtered by advanced parameters like status, amount, date range, and location.
+     * 
+     * @param status - The status of the order (e.g., Shipped, Cancelled).
+     * @param minAmount - Minimum sales amount for filtering.
+     * @param maxAmount - Maximum sales amount for filtering.
+     * @param startDate - Start date for filtering sales.
+     * @param endDate - End date for filtering sales.
+     * @param city - Shipping city for filtering.
+     * @param state - Shipping state for filtering.
+     * @return - A list of sales data that matches the specified filters.
+     */
+    @GetMapping("/filter")
+    public ResponseEntity<List<EcomSalesData>> filterSalesData(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Double minAmount,
+            @RequestParam(required = false) Double maxAmount,
+            @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date endDate,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String state) {
+
+        List<EcomSalesData> filteredData = service.filterSalesData(status, minAmount, maxAmount, startDate, endDate, city, state);
+        return ResponseEntity.ok(filteredData);
+    }
+    
+    /**
+     * Adds new sales data.
+     *
+     * @param values the sales data to add as an array of strings.
+     * @return ResponseEntity with status 201 (Created) if successful, 400 (Bad Request) if data already exists.
+     */
+    @PostMapping
+    public ResponseEntity<String> addSalesData(@RequestBody EcomSalesData newSalesData) {
+        try {
+            boolean added = service.addSalesData(newSalesData);
+            if (added) {
+                return new ResponseEntity<>("Sales data added successfully.", HttpStatus.CREATED);
+            }
+            return new ResponseEntity<>("Failed to add data.", HttpStatus.BAD_REQUEST);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Updates existing sales data.
+     *
+     * @param index       the index of the sales data to update.
+     * @param updatedData the updated sales data.
+     * @return ResponseEntity with status 200 (OK) if successful, 404 (Not Found) if data not found.
+     */
+    @PutMapping("/{index}")
+    public ResponseEntity<String> updateSalesData(@PathVariable int index, @RequestBody EcomSalesData updatedData) {
+        updatedData.setRecordIndex(index);
+        boolean updated = service.updateSalesData(updatedData);
+        if (updated) {
+            return ResponseEntity.ok("Sales data updated successfully.");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Data not found.");
+    }
+
+    /**
+     * Deletes sales data by index.
+     *
+     * @param index the index of the sales data to delete.
+     * @return ResponseEntity with status 200 (OK) if successful, 404 (Not Found) if data not found.
+     */
+    @DeleteMapping("/{index}")
+    public ResponseEntity<String> deleteSalesData(@PathVariable int index) {
+        boolean deleted = service.deleteSalesData(index);
+        if (deleted) {
+            return ResponseEntity.ok("Sales data deleted successfully.");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Data not found.");
+    }
+    
+    
+}

@@ -1,0 +1,159 @@
+package com.acs560.dataanalyzer.views.customer;
+
+import com.acs560.dataanalyzer.models.Customer;
+import com.acs560.dataanalyzer.services.CustomerService;
+import com.acs560.dataanalyzer.views.MainLayout;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
+import java.util.List;
+
+/**
+ * The view to display and manage customer data.
+ */
+@Route(value = "customers", layout = MainLayout.class)
+@AnonymousAllowed
+public class CustomerView extends VerticalLayout {
+
+    private final CustomerService customerService;
+    private final Grid<Customer> grid;
+    private final CustomerForm form;
+    private final Dialog dialog;
+
+    /**
+     * Constructor for CustomerView.
+     * 
+     * @param customerService - the service to manage customers.
+     */
+    public CustomerView(CustomerService customerService) {
+        this.customerService = customerService;
+        this.form = createForm();
+        this.grid = createGrid();
+        this.dialog = new Dialog();
+
+        add(getToolbar(), getContent());
+        updateGrid();
+        closeForm();
+    }
+
+    /**
+     * Creates the grid component for displaying customer data.
+     * 
+     * @return the configured Grid component.
+     */
+    private Grid<Customer> createGrid() {
+        Grid<Customer> grid = new Grid<>(Customer.class);
+        grid.setColumns("name", "email");
+        grid.getColumns().forEach(col -> col.setAutoWidth(true));
+        grid.asSingleSelect().addValueChangeListener(event -> form.update(event.getValue(), false));
+        return grid;
+    }
+
+    /**
+     * Creates the form component for adding and editing customers.
+     * 
+     * @return the configured CustomerForm component.
+     */
+    private CustomerForm createForm() {
+        CustomerForm form = new CustomerForm(customerService);
+        form.addListener(CustomerForm.AddEvent.class, this::addCustomer);
+        form.addListener(CustomerForm.UpdateEvent.class, this::updateCustomer);
+        form.addListener(CustomerForm.DeleteEvent.class, this::deleteCustomer);
+        form.addListener(CustomerForm.CancelEvent.class, e -> closeForm());
+        return form;
+    }
+
+    /**
+     * Creates the toolbar containing the add button.
+     * 
+     * @return the configured toolbar component.
+     */
+    private Component getToolbar() {
+        Button addButton = new Button("Add Customer");
+        addButton.addClickListener(click -> showFormInDialog(new Customer()));
+        return new HorizontalLayout(addButton);
+    }
+
+    /**
+     * Creates the main content layout for the view.
+     * 
+     * @return the configured HorizontalLayout component.
+     */
+    private HorizontalLayout getContent() {
+        HorizontalLayout content = new HorizontalLayout(grid);
+        content.setSizeFull();
+        return content;
+    }
+
+    /**
+     * Updates the grid with customer data.
+     */
+    private void updateGrid() {
+        List<Customer> customers = (List<Customer>) customerService.getAllCustomers();
+        grid.setItems(customers);
+    }
+
+    /**
+     * Displays the form in a dialog for adding or editing customer data.
+     * 
+     * @param customer - the customer data to be displayed in the form.
+     */
+    private void showFormInDialog(Customer customer) {
+        form.update(customer, customer.getCustomerId() == null);
+        dialog.add(form);
+        dialog.open();
+    }
+
+    /**
+     * Closes the dialog form.
+     */
+    private void closeForm() {
+        dialog.close();
+    }
+
+    /**
+     * Handles adding a new customer.
+     * 
+     * @param event - the AddEvent containing the new customer data.
+     */
+    private void addCustomer(CustomerForm.AddEvent event) {
+        customerService.addCustomer(event.getCustomer());
+        Notification.show("Customer added");
+        updateGrid();
+        closeForm();
+    }
+
+    /**
+     * Handles updating an existing customer.
+     * 
+     * @param event - the UpdateEvent containing the updated customer data.
+     */
+    private void updateCustomer(CustomerForm.UpdateEvent event) {
+        Customer customer = event.getCustomer();
+        Long customerId = customer.getCustomerId();
+        
+        customerService.updateCustomer(customerId, customer);
+        Notification.show("Customer updated");
+        updateGrid();
+        closeForm();
+    }
+
+
+    /**
+     * Handles deleting a customer.
+     * 
+     * @param event - the DeleteEvent containing the customer data to be deleted.
+     */
+    private void deleteCustomer(CustomerForm.DeleteEvent event) {
+        customerService.deleteCustomer(event.getCustomer().getCustomerId());
+        Notification.show("Customer deleted");
+        updateGrid();
+        closeForm();
+    }
+}

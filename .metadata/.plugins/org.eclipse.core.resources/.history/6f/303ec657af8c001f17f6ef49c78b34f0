@@ -1,0 +1,50 @@
+package com.acs560.dataanalyzer.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
+import com.acs560.dataanalyzer.views.LoginView;
+import com.vaadin.flow.spring.security.VaadinWebSecurity;
+
+@EnableWebSecurity
+@Configuration
+public class SecurityConfig extends VaadinWebSecurity {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // Call Vaadin's default security configuration first
+        super.configure(http);
+
+        // Configure custom security rules
+        http.csrf().disable(); // Disable CSRF for testing; enable in production as needed
+        http.authorizeHttpRequests(auth -> auth
+            .requestMatchers("/login", "/images/**", "/VAADIN/**").permitAll() // Allow access to login, images, and Vaadin static resources
+            .anyRequest().authenticated() // All other requests require authentication
+        );
+
+        // Set the login view using Vaadin's method
+        setLoginView(http, LoginView.class);
+    }
+
+    @Bean
+    public UserDetailsService users() {
+        // Create in-memory users for testing
+        UserDetails user = User.builder()
+                .username("user")
+                .password("{noop}userpass") // {noop} means no encoding for testing
+                .roles("USER")
+                .build();
+        UserDetails admin = User.builder()
+                .username("admin")
+                .password("{noop}adminpass")
+                .roles("ADMIN")
+                .build();
+        return new InMemoryUserDetailsManager(user, admin);
+    }
+}

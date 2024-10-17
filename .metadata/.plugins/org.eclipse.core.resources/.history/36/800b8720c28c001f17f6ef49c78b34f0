@@ -1,0 +1,250 @@
+# EcomSales Analyzer - HW6
+
+## Project Description
+EcomSales Analyzer HW6 refactors the previous project to use a MySQL database instead of H2, providing a persistent storage solution for managing e-commerce sales data. The application supports CRUD (Create, Read, Update, Delete) operations, advanced filtering, and data initialization using SQL files. The updated setup enables robust data management through RESTful HTTP requests.
+
+## Features
+- Basic CRUD operations on sales data using a MySQL database.
+- Advanced data filtering capabilities based on various sales parameters.
+- Persistent storage using a MySQL relational database.
+- Data initialization using SQL files for easy setup on startup.
+- Separation of concerns with distinct controller, service, and repository layers.
+
+## Table of Contents
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [API Documentation](#api-documentation)
+- [Testing Using Postman](#testing-using-postman)
+- [Configuration](#configuration)
+- [Contributing](#contributing)
+
+---
+
+## Project Structure
+```
+src/main/java/com/acs560/dataanalyzer
+├── controller
+│   └── DataController.java             // Handles CRUD operations on sales data
+│   └── CustomerController.java         // Handles CRUD operations on customer data
+├── models
+│   └── EcomSalesData.java              // Model class representing the sales data
+│   └── Customer.java                   // Model class representing the customer data
+├── services
+│   └── EcomSalesDataService.java       // Service interface for sales data operations
+│   └── CustomerService.java            // Service interface for customer operations
+├── services/impl
+│   └── EcomSalesDataServiceImpl.java   // Implementation of sales data service
+│   └── CustomerServiceImpl.java        // Implementation of customer service
+├── repositories
+│   └── EcomSalesDataRepository.java    // Repository for managing sales data in the MySQL database
+│   └── CustomerRepository.java         // Repository for managing customer data
+```
+
+### Key Components
+- **DataController**: Manages CRUD and filtering functionalities for sales data.
+- **CustomerController**: Manages CRUD functionalities for customer data.
+- **Services**: Contains business logic for data operations.
+- **Repository**: Interfaces with the MySQL database for data persistence.
+
+---
+
+## Installation
+
+### Prerequisites
+- Java 17 or higher
+- Maven 3.6+
+- MySQL Server
+- Postman (for API testing)
+
+### Clone the Repository
+```bash
+git clone https://github.com/abroa01/Homework_ACS560
+cd HW6_REST_API_MySql_DB
+```
+
+### Setup MySQL Database
+1. **Create a MySQL Database**:
+   ```sql
+   CREATE DATABASE EcomSalesData;
+   ```
+2. **Configure MySQL Credentials in `application.properties`**:
+   Update the `spring.datasource.username` and `spring.datasource.password` values.
+
+### Build and Run the Application
+1. **Build the Project**:
+   ```bash
+   mvn clean install
+   ```
+2. **Run the Project**:
+   ```bash
+   mvn spring-boot:run
+   ```
+
+The application will run at `http://localhost:8080/`.
+
+---
+
+## API Documentation
+
+### REST_API_HW_6_MySQL_DB
+
+#### Endpoints
+
+**GET: Get All Sales Data**  
+URL: `http://localhost:8080/api/sales`  
+Description: Retrieves all sales data.
+
+---
+
+**GET: Get Sales Data by Index**  
+URL: `http://localhost:8080/api/sales/{index}`  
+Example: `http://localhost:8080/api/sales/2002`  
+Description: Retrieves sales data for the specified index.
+
+---
+
+**POST: Add Sales Data**  
+URL: `http://localhost:8080/api/sales`  
+Description: Adds new sales data.  
+**Body (raw JSON)**:
+```json
+{
+    "orderId": "ORD123",
+    "date": "2024-10-01",
+    "status": "Shipped",
+    "fulfilment": "Warehouse",
+    "channel": "Online",
+    "category": "Electronics",
+    "size": "Medium",
+    "amount": 199.99,
+    "shipCity": "New York",
+    "shipState": "NY",
+    "customer": {
+        "customerId": 1
+    }
+}
+```
+
+---
+
+**PUT: Update Sales Data**  
+URL: `http://localhost:8080/api/sales/{index}`  
+Example: `http://localhost:8080/api/sales/130`  
+**Body (raw JSON)**:
+```json
+{
+    "orderId": "ORD124",
+    "date": "2024-10-02",
+    "status": "Pending",
+    "fulfilment": "Drop-Shipping",
+    "channel": "Retail",
+    "category": "Apparel",
+    "size": "Large",
+    "amount": 89.99,
+    "shipCity": "Los Angeles",
+    "shipState": "CA",
+    "customer": {
+        "customerId": 2
+    }
+}
+```
+
+---
+
+**DELETE: Delete Sales Data**  
+URL: `http://localhost:8080/api/sales/{index}`  
+Example: `http://localhost:8080/api/sales/2001`  
+Description: Deletes sales data by the specified index.
+
+---
+
+**Customer CRUD Endpoints**
+
+**GET: Get All Customers**  
+URL: `http://localhost:8080/api/customers`  
+Description: Retrieves all customers.
+
+---
+
+**GET: Get Customer by ID**  
+URL: `http://localhost:8080/api/customers/{id}`  
+Example: `http://localhost:8080/api/customers/1`  
+Description: Retrieves customer data by ID.
+
+---
+
+**POST: Add Customer**  
+URL: `http://localhost:8080/api/customers`  
+**Body (raw JSON)**:
+```json
+{
+    "name": "John Doe",
+    "email": "john.doe@example.com"
+}
+```
+
+---
+
+**PUT: Update Customer**  
+URL: `http://localhost:8080/api/customers/{id}`  
+Example: `http://localhost:8080/api/customers/1`  
+**Body (raw JSON)**:
+```json
+{
+    "name": "Jane Doe",
+    "email": "jane.doe@example.com"
+}
+```
+
+---
+
+**DELETE: Delete Customer**  
+URL: `http://localhost:8080/api/customers/{id}`  
+Example: `http://localhost:8080/api/customers/1`  
+Description: Deletes a customer by ID.
+
+---
+
+## Testing Using Postman
+
+### Import Postman Collection
+1. Download the provided [Postman Collection](/HW6_REST_API_MySQL_DB/HW6 EcomSales and Customer API Testing.postman_collection.json)
+2. Open Postman and click on **Import**.
+3. Select the Postman collection JSON file and click **Import**.
+4. The collection will appear in your workspace, and you can test each endpoint.
+
+### Sample Requests
+- **Add Sales Data**:
+  - `POST http://localhost:8080/api/sales`
+  - Body: JSON data as shown in the API Documentation section.
+  
+- **Get All Sales Data**:
+  - `GET http://localhost:8080/api/sales`
+
+---
+
+## Configuration
+
+The application uses a MySQL database with the following configurations:
+
+### application.properties
+```properties
+spring.application.name=EcomSales-Analyzer
+spring.datasource.url=jdbc:mysql://localhost:3306/EcomSalesData
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.username=root
+spring.datasource.password=password
+spring.jpa.hibernate.ddl-auto=update
+spring.datasource.initialization-mode=always
+spring.sql.init.mode=always
+spring.sql.init.schema-locations=classpath:schema.sql
+spring.sql.init.data-locations=classpath:data.sql
+```
+
+---
+
+## Contributing
+Contributions are welcome! Feel free to submit a Pull Request or open an Issue if you find a bug or want to suggest an enhancement.
+
+---
+```

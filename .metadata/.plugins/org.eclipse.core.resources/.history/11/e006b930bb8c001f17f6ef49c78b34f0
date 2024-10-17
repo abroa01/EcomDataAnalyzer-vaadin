@@ -1,0 +1,47 @@
+package com.acs560.dataanalyzer.views.ecomsalesdata;
+
+import org.springframework.context.annotation.Scope;
+
+import com.acs560.dataanalyzer.models.EcomSalesData;
+import com.acs560.dataanalyzer.services.EcomSalesDataService;
+import com.acs560.dataanalyzer.views.MainLayout;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+
+import jakarta.annotation.security.PermitAll;
+
+//@Route(value = "ecomSalesData", layout = MainLayout.class)
+@SpringComponent
+@Scope("prototype")
+@PermitAll
+@Route(value = "", layout = MainLayout.class)
+@PageTitle("EcomSales | Data Analyzer")
+public class EcomSalesDataView extends VerticalLayout {
+
+    private final EcomSalesDataService service;
+    private Grid<EcomSalesData> grid = new Grid<>(EcomSalesData.class);
+    private EcomSalesDataForm form;
+
+    public EcomSalesDataView(EcomSalesDataService service) {
+        this.service = service;
+        this.form = new EcomSalesDataForm(service);
+
+        // Configure Grid
+        grid.setItems(service.getAllSalesData());
+        grid.setColumns("orderId", "amount", "shipCity");
+
+        // When a row is selected or deselected, populate form
+        grid.asSingleSelect().addValueChangeListener(event -> form.setEcomSalesData(event.getValue()));
+
+        // Layout
+        HorizontalLayout mainLayout = new HorizontalLayout(grid, form);
+        mainLayout.setSizeFull();
+        grid.setSizeFull();
+
+        add(mainLayout);
+    }
+}

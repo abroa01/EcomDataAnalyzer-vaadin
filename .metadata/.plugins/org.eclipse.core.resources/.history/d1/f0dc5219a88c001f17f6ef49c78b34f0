@@ -1,0 +1,34 @@
+package com.acs560.dataanalyzer.views.ecomsalesdata;
+
+import com.acs560.dataanalyzer.views.MainLayout;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.Route;
+
+@Route(value = "ecomSalesData", layout = MainLayout.class)
+public class EcomSalesDataView extends VerticalLayout {
+
+    private final EcomSalesDataService service;
+    private Grid<EcomSalesData> grid = new Grid<>(EcomSalesData.class);
+    private EcomSalesDataForm form;
+
+    public EcomSalesDataView(EcomSalesDataService service) {
+        this.service = service;
+        this.form = new EcomSalesDataForm(service);
+
+        // Configure Grid
+        grid.setItems(service.findAll());
+        grid.setColumns("orderId", "amount", "shipCity");
+
+        // When a row is selected or deselected, populate form
+        grid.asSingleSelect().addValueChangeListener(event -> form.setEcomSalesData(event.getValue()));
+
+        // Layout
+        HorizontalLayout mainLayout = new HorizontalLayout(grid, form);
+        mainLayout.setSizeFull();
+        grid.setSizeFull();
+
+        add(mainLayout);
+    }
+}

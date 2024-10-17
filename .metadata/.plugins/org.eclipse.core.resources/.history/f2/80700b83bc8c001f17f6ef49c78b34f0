@@ -1,0 +1,45 @@
+package com.acs560.dataanalyzer.views.customer;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import com.acs560.dataanalyzer.models.Customer;
+import com.acs560.dataanalyzer.services.CustomerService;
+import com.acs560.dataanalyzer.views.MainLayout;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
+
+@Route(value = "customers", layout = MainLayout.class)
+@AnonymousAllowed
+public class CustomerView extends VerticalLayout {
+
+    private final CustomerService customerService;
+    private Grid<Customer> grid = new Grid<>(Customer.class);
+    private CustomerForm form;
+
+    public CustomerView(CustomerService customerService) {
+        this.customerService = customerService;
+        this.form = new CustomerForm(customerService);
+
+        // Configure Grid
+        List<Customer> customers = StreamSupport.stream(customerService.getAllCustomers().spliterator(), false)
+                .collect(Collectors.toList());
+grid.setItems(customers);
+        grid.setColumns("name", "email");
+
+        // When a row is selected or deselected, populate form
+        grid.asSingleSelect().addValueChangeListener(event -> form.setCustomer(event.getValue()));
+
+        // Layout
+        HorizontalLayout mainLayout = new HorizontalLayout(grid, form);
+        mainLayout.setSizeFull();
+        grid.setSizeFull();
+
+        add(mainLayout);
+    }
+}

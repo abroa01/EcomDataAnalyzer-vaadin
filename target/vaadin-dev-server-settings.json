@@ -1,0 +1,17 @@
+{
+  "frontendFolder": "/Users/anshul/Masters/Courses/SE/vaadin-workspace/EcomDataAnalyzer-vaadin/EcomDataAnalayzer-vaadin/./src/main/frontend",
+  "themeFolder": "themes",
+  "themeResourceFolder": "/Users/anshul/Masters/Courses/SE/vaadin-workspace/EcomDataAnalyzer-vaadin/EcomDataAnalayzer-vaadin/./src/main/frontend/generated/jar-resources",
+  "staticOutput": "/Users/anshul/Masters/Courses/SE/vaadin-workspace/EcomDataAnalyzer-vaadin/EcomDataAnalayzer-vaadin/target/classes/META-INF/VAADIN/webapp/VAADIN/static",
+  "generatedFolder": "generated",
+  "statsOutput": "/Users/anshul/Masters/Courses/SE/vaadin-workspace/EcomDataAnalyzer-vaadin/EcomDataAnalayzer-vaadin/target/classes/META-INF/VAADIN/config",
+  "frontendBundleOutput": "/Users/anshul/Masters/Courses/SE/vaadin-workspace/EcomDataAnalyzer-vaadin/EcomDataAnalayzer-vaadin/target/classes/META-INF/VAADIN/webapp",
+  "devBundleOutput": "/Users/anshul/Masters/Courses/SE/vaadin-workspace/EcomDataAnalyzer-vaadin/EcomDataAnalayzer-vaadin/target/dev-bundle/webapp",
+  "devBundleStatsOutput": "/Users/anshul/Masters/Courses/SE/vaadin-workspace/EcomDataAnalyzer-vaadin/EcomDataAnalayzer-vaadin/target/dev-bundle/config",
+  "jarResourcesFolder": "/Users/anshul/Masters/Courses/SE/vaadin-workspace/EcomDataAnalyzer-vaadin/EcomDataAnalayzer-vaadin/./src/main/frontend/generated/jar-resources",
+  "themeName": "",
+  "clientServiceWorkerSource": "/Users/anshul/Masters/Courses/SE/vaadin-workspace/EcomDataAnalyzer-vaadin/EcomDataAnalayzer-vaadin/target/sw.ts",
+  "pwaEnabled": false,
+  "offlineEnabled": false,
+  "offlinePath": "'offline.html'"
+}

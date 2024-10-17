@@ -1,0 +1,21 @@
+package com.acs560.dataanalyzer.security;
+
+import com.acs560.dataanalyzer.views.LoginView;
+import com.vaadin.flow.spring.security.VaadinWebSecurity;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends VaadinWebSecurity {
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+	    setLoginView(http, LoginView.class);
+	    http.exceptionHandling()
+	        .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"));
+	}
+}

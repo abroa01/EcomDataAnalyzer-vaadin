@@ -1,0 +1,28 @@
+package com.acs560.dataanalyzer.views;
+
+import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.router.RouterLink;
+
+public class MainLayout extends AppLayout {
+
+    public MainLayout() {
+        createHeader();
+    }
+
+    private void createHeader() {
+        H1 logo = new H1("Your App");
+        logo.addClassName("logo");
+
+        Button logout = new Button("Logout", e -> {
+            // handle logout
+        });
+
+        HorizontalLayout header = new HorizontalLayout(logo, logout);
+        header.setDefaultVerticalComponentAlignment(Alignment.CENTER);
+        addToNavbar(header);
+    }
+}
